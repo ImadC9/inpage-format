@@ -1,6 +1,91 @@
 {
   "passed": true,
   "native_files_checked": 15,
+  "reference_sample": "02-control-a.inp",
+  "baseline_comparison": {
+    "baseline": "01-baseline.inp",
+    "reference": "02-control-a.inp",
+    "text_identical": true,
+    "formatting_records_identical": true,
+    "default_header_identical": true,
+    "font_slots_identical": true,
+    "streams": [
+      {
+        "stream": "DocumentInfo",
+        "baseline_sha256": "5bc633d52bc4345c9cc4ea7cf49422a85a9fe401faf3239ef72b53aa0dd667ee",
+        "reference_sha256": "5bc633d52bc4345c9cc4ea7cf49422a85a9fe401faf3239ef72b53aa0dd667ee",
+        "changed_intervals": []
+      },
+      {
+        "stream": "InPage100",
+        "baseline_sha256": "4fcfd86d08f95aeeaedb5b8ee5d06f997745e71f52d7f395ce5264da2dad0f8c",
+        "reference_sha256": "7e3223d049c4b5a8b759b2c1574f696944716bc0ad088d3c4befd3c39da4a116",
+        "changed_intervals": [
+          {
+            "offset": 1298,
+            "length": 1,
+            "baseline_hex": "ae",
+            "reference_hex": "12"
+          },
+          {
+            "offset": 1376,
+            "length": 1,
+            "baseline_hex": "b1",
+            "reference_hex": "15"
+          },
+          {
+            "offset": 1702,
+            "length": 1,
+            "baseline_hex": "c8",
+            "reference_hex": "2c"
+          },
+          {
+            "offset": 1708,
+            "length": 1,
+            "baseline_hex": "ca",
+            "reference_hex": "2e"
+          },
+          {
+            "offset": 1718,
+            "length": 1,
+            "baseline_hex": "c7",
+            "reference_hex": "2b"
+          },
+          {
+            "offset": 1728,
+            "length": 1,
+            "baseline_hex": "b9",
+            "reference_hex": "1d"
+          },
+          {
+            "offset": 2054,
+            "length": 1,
+            "baseline_hex": "c9",
+            "reference_hex": "2d"
+          },
+          {
+            "offset": 3975,
+            "length": 2,
+            "baseline_hex": "f012",
+            "reference_hex": "de10"
+          },
+          {
+            "offset": 3978,
+            "length": 1,
+            "baseline_hex": "6e",
+            "reference_hex": "8a"
+          },
+          {
+            "offset": 4191,
+            "length": 2,
+            "baseline_hex": "b0e8",
+            "reference_hex": "a8e9"
+          }
+        ]
+      }
+    ],
+    "changed_field_meanings": "unresolved; these bytes are not classified as formatting or volatile"
+  },
   "control_streams_identical": true,
   "independent_held_out_document_checked": false,
   "general_inline_ownership_verified": false,

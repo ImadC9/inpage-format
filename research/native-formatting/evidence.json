@@ -2,12 +2,17 @@
   "schema": 1,
   "research_date": "2026-10-07",
   "provenance": {
-    "author": "user supplied controlled native samples",
-    "author_confirmation": "baseline font Naskh; files saved and reopened correctly",
-    "producer_build": "not independently captured for these supplied originals",
-    "semantic_labels": "sample filenames and requested experiment matrix; no UI screenshots supplied",
-    "all_text_selection": "inferred from span coverage; not explicitly confirmed by author",
-    "baseline_size": "inferred 11 pt from raw value and controlled size-11 match; differs from requested 12 pt"
+    "fixture_creator": "ImadC9",
+    "producing_installation": "InPage2014 Khattat Professionals; identified by the creator",
+    "producer_record": "provenance/producer.json",
+    "about_display": "INPAGE 2014",
+    "file_version_resource": "1.0.0.1",
+    "product_version_resource": "2.0.0.0",
+    "native_save_reopen": "confirmed by the creator; not replayed by the verifier",
+    "semantic_labels": "experiment filenames; original formatting UI state not captured",
+    "all_text_selection": "inferred from span coverage",
+    "baseline_size": "11 pt in the saved body; header default 12 pt",
+    "fixture_licence": "repository MIT licence; redistribution authorized by the creator"
   },
   "controls": [
     "02-control-a.inp",
@@ -1127,5 +1132,6 @@
       ]
     }
   ],
-  "shared_text_sha256": "8feb9c68070e95bc0eb6824420b7cfdea2cc95eab0e260300b620662c5b237af"
+  "shared_text_sha256": "8feb9c68070e95bc0eb6824420b7cfdea2cc95eab0e260300b620662c5b237af",
+  "reference_sample": "02-control-a.inp"
 }

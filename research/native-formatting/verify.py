@@ -8,17 +8,56 @@ import struct
 
 from reader import read_stream, UnsupportedProfile
 
-for vendor in (Path(__file__).parent/'vendor',
-               Path(__file__).parent.parent/'legacy-structures/vendor',
-               Path(__file__).parent.parent/'inp-lab/vendor'):
-    if vendor.is_dir():
-        sys.path.insert(0,str(vendor))
-        break
-import olefile
+HERE = Path(__file__).resolve().parent
+try:
+    import olefile
+except ImportError:
+    raise SystemExit('Install the pinned dependency: python -m pip install -r research/native-formatting/requirements.txt')
 
 
 def sha(data):
     return hashlib.sha256(data).hexdigest()
+
+
+def changed_intervals(before, after):
+    """Record exact differences without assigning unverified field meanings."""
+    intervals=[]
+    start=None
+    for i in range(max(len(before),len(after))+1):
+        different=i<max(len(before),len(after)) and (
+            i>=len(before) or i>=len(after) or before[i]!=after[i])
+        if different and start is None:
+            start=i
+        if not different and start is not None:
+            intervals.append({'offset':start,'length':i-start,
+                              'baseline_hex':before[start:i].hex(),
+                              'reference_hex':after[start:i].hex()})
+            start=None
+    return intervals
+
+
+def baseline_comparison(folder, reference):
+    streams=[]
+    for filename in ('01-baseline.inp',reference):
+        with olefile.OleFileIO(folder/filename) as doc:
+            streams.append({'/'.join(p):doc.openstream(p).read() for p in doc.listdir()})
+    before,after=streams
+    if set(before)!=set(after):
+        raise ValueError('baseline and reference stream sets differ')
+    parsed_before=read_stream(before['InPage100'])
+    parsed_after=read_stream(after['InPage100'])
+    return {'baseline':'01-baseline.inp','reference':reference,
+            'text_identical':parsed_before['text_sha256']==parsed_after['text_sha256'],
+            'formatting_records_identical':
+                [e['raw'] for e in parsed_before['format_entries']]==
+                [e['raw'] for e in parsed_after['format_entries']],
+            'default_header_identical':parsed_before['default_header']==parsed_after['default_header'],
+            'font_slots_identical':parsed_before['fonts']==parsed_after['fonts'],
+            'streams':[{'stream':name,'baseline_sha256':sha(before[name]),
+                        'reference_sha256':sha(after[name]),
+                        'changed_intervals':changed_intervals(before[name],after[name])}
+                       for name in sorted(before)],
+            'changed_field_meanings':'unresolved; these bytes are not classified as formatting or volatile'}
 
 
 def negative_checks(data):
@@ -64,7 +103,7 @@ def verify(folder, evidence):
             if data[offset:offset+len(expected)]!=expected:
                 raise ValueError(f"excerpt mismatch: {path.name} at {offset}")
         parsed=read_stream(data)
-        if not rejection_tests:
+        if path.name==evidence['reference_sample']:
             rejection_tests=negative_checks(data)
         body=parsed['body']['style']
         for key,value in sample['expected_body'].items():
@@ -72,8 +111,7 @@ def verify(folder, evidence):
                 raise ValueError(f"semantic check failed: {path.name} {key}")
         if parsed['text_sha256']!=evidence['shared_text_sha256']:
             raise ValueError(f"text changed: {path.name}")
-        # The entire stream remains available locally. Only formatting excerpts
-        # and hashes are included in this shareable report.
+        # Full originals are committed as fixtures; keep the report concise.
         results.append({'file':path.name,'file_sha256':sha(raw),
                         'stream_sha256':sha(data),'text_sha256':parsed['text_sha256'],
                         'format_entry_spans':[e['span_value'] for e in parsed['format_entries']],
@@ -82,7 +120,12 @@ def verify(folder, evidence):
     controls=[r['stream_sha256'] for r in results if r['file'] in evidence['controls']]
     if len(controls)!=3 or len(set(controls))!=1:
         raise ValueError('unchanged control streams do not match')
+    comparison=baseline_comparison(folder,evidence['reference_sample'])
+    if not all(comparison[k] for k in ('text_identical','formatting_records_identical','default_header_identical','font_slots_identical')):
+        raise ValueError('baseline/reference text or formatting differs')
     return {'passed':True, 'native_files_checked':len(results),
+            'reference_sample':evidence['reference_sample'],
+            'baseline_comparison':comparison,
             'control_streams_identical':True,'independent_held_out_document_checked':False,
             'general_inline_ownership_verified':False,
             'body_and_cr_ownership':'inferred single-paragraph profile only',
@@ -93,7 +136,8 @@ def verify(folder, evidence):
 
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('samples',type=Path)
+    parser.add_argument('samples',type=Path,nargs='?',default=HERE/'fixtures',
+                        help='Native fixture folder (default: committed fixtures next to this script)')
     parser.add_argument('--report',type=Path)
     args=parser.parse_args()
     try:
@@ -101,7 +145,7 @@ def main():
         report=verify(args.samples,evidence)
         rendered=json.dumps(report,indent=2,ensure_ascii=True)+'\n'
         if args.report:
-            with args.report.open('x',encoding='utf-8') as out:
+            with args.report.open('x',encoding='utf-8',newline='\n') as out:
                 out.write(rendered)
             print(f"PASS: {len(report['samples'])} native files, matching controls, exact excerpts and formatting checks")
         else:

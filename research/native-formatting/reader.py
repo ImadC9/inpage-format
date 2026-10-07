@@ -1,4 +1,4 @@
-"""Conservative reader for the supplied single-paragraph InPage100 profile.
+"""Conservative reader for the controlled single-paragraph InPage100 profile.
 
 This is research code, not a general INP reader. Unmatched profiles fail closed.
 All offsets refer to the reconstructed logical stream. Property widths and
@@ -190,7 +190,7 @@ def read_stream(data):
         raise UnsupportedProfile('format spans outside verified profile')
     body=effective_style(entries[1],defaults,fonts)
     trailing=effective_style(entries[2],defaults,fonts)
-    return {'profile':'supplied-single-paragraph-InPage100',
+    return {'profile':'controlled-single-paragraph-InPage100',
             'stream_sha256':hashlib.sha256(data).hexdigest(), 'directory':directory,
             'default_header':{'offset':style_start,'length':4+size,'sha256':STYLE_PROFILE_SHA256},
             'default_properties':default_fields,'fonts':fonts,
@@ -205,4 +205,4 @@ def read_stream(data):
             'unresolved':['leading format entry span=1 ownership',
                           'general inline range ownership and multiple paragraphs',
                           'default-style reference/inheritance outside identical header profile',
-                          'units and semantics outside supplied corpus']}
+                          'units and semantics outside controlled corpus']}
