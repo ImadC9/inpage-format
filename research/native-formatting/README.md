@@ -63,6 +63,5 @@ and report filenames must be new.
 All 15 documents were used for discovery. Body/CR ownership remains inferred
 for this profile; word-specific ownership and an independent native test
 remain unverified. See [`provenance/producer.json`](provenance/producer.json)
-and the recorded [About dialog](provenance/about-inpage2014.jpg) for the
-application identity. Branding and version resources are recorded separately
+for the observed About branding, version resources and executable hash. Branding and version resources are recorded separately
 from the document-format family; this is not identified as InPage 3.
